@@ -30,7 +30,7 @@ executable app
   ghc-options:      -Wall
   
 executable time
-  build-depends:    base < 5
+  build-depends:    base < 5, http-conduit, tagsoup, bytestring
   build-depends:    scratch
   hs-source-dirs:   app/Time
   main-is:          Main.hs
