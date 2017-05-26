@@ -13,8 +13,12 @@ cabal-version:       >=1.10
 
 
 library
-  exposed-modules:     
+  exposed-modules:     HTML
   build-depends:       base >=4.6 && < 4.10
+                     , http-conduit
+                     , bytestring
+                     , text
+                     , transformers
                        
   hs-source-dirs:      src
   include-dirs:        src
@@ -30,7 +34,7 @@ executable app
   ghc-options:      -Wall
   
 executable time
-  build-depends:    base < 5, http-conduit, tagsoup, bytestring, text
+  build-depends:    base < 5, tagsoup, bytestring, text
   build-depends:    scratch
   hs-source-dirs:   app/Time
   main-is:          Main.hs

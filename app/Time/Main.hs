@@ -1,31 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Data.ByteString.Lazy (ByteString)
 import Data.Text.Lazy (Text)
-import Data.Text.Lazy.Encoding
-import Network.HTTP.Conduit
-import Text.HTML.TagSoup
+import Data.Text.Lazy.Encoding (decodeUtf8)
+import Text.HTML.TagSoup (Tag(TagOpen, TagText), parseTags)
+
+import HTML
 
 
-type URL = String
-
-
-getTime
-  -- Url to html with time.
-  :: URL
-  -- How to decode html.
-  -> (ByteString -> Text)
-  -- How to extract time.
-  -> ([Tag Text] -> Maybe Text)
-  -- Maybe return something.
-  -> IO (Maybe Text)
-getTime url decodeHtml parseTime =
-  parseTime . parseTags . decodeHtml <$> simpleHttp url
-
-parseTime :: [Tag Text] -> Maybe Text
-parseTime tags =
-  case getTimeTag tags of
+parseTime :: Text -> Maybe Text
+parseTime htmlText =
+  case getTimeTag htmlText of
     TagText time -> Just time
     _            -> Nothing
   where
@@ -37,8 +22,8 @@ parseTime tags =
     
     -- Extract time tag.
     getTimeTag =
-      head . tail . dropWhile (not . isTimeDiv)
+      head . tail . dropWhile (not . isTimeDiv) . parseTags
 
 
 main :: IO ()
-main = getTime "https://time.is" decodeUtf8 parseTime >>= print
+main = retrieve parseTime decodeUtf8 "https://time.is" >>= print
