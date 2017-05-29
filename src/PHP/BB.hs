@@ -7,6 +7,7 @@ import Data.Word
 import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Tree
 import Text.ParserCombinators.Parsec
+import Text.StringLike
 
 import qualified Data.Map.Lazy as M
 
@@ -31,6 +32,26 @@ data ForumPage
   , pageMap    :: M.Map Word URL
   }
   
+
+
+data WebPageParams s
+  = WebPageParams
+  { webPageDocType :: [Attribute s]
+  , webPageHtml    :: [Attribute s]
+  }
+  
+
+data WebPage s
+  = WebPage
+  { webPageParams  :: WebPageParams s
+  , webPageHead    :: TagTree s
+  , webPageBody    :: TagTree s
+  }
+
+webPage :: StringLike s => s -> WebPage s
+webPage input = let
+  tree = parseTree input
+  in undefined
 
 isTopic :: TagTree Text -> Bool
 isTopic (TagBranch "li" [("class", "row bg1")] _) = True
