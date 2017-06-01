@@ -54,3 +54,11 @@ executable php-bb
   main-is:          Main.hs
   default-language: Haskell2010
   ghc-options:      -Wall
+  
+executable yesod-basic
+  build-depends:    base < 5
+  build-depends:    scratch, yesod
+  hs-source-dirs:   app/Yesod/Basic
+  main-is:          Main.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
