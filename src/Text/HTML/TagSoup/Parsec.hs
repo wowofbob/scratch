@@ -29,7 +29,9 @@ tagText = do
         TagText _ -> Just tag
         _         -> Nothing
 
-tagSpace :: (Show s, StringLike s, Stream s Identity Char) => TagParser s (Tag s)
+tagSpace
+  :: (Show s, StringLike s, Stream s Identity Char)
+  => TagParser s (Tag s)
 tagSpace = do
   
   -- Parse TagText
@@ -48,4 +50,4 @@ tagSpace = do
     Right _ -> pure t
   
   where
-    msg = "Expected TagText containing spaces."
+    msg = "expected TagText containing spaces"
