@@ -49,7 +49,7 @@ executable time
   
 executable php-bb
   build-depends:    base < 5
-  build-depends:    scratch, text, tagsoup, bytestring, file-embed
+  build-depends:    scratch, text, tagsoup, bytestring, file-embed, parsec
   hs-source-dirs:   app/PHP/BB
   main-is:          Main.hs
   default-language: Haskell2010

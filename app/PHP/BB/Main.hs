@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Data.FileEmbed
@@ -10,14 +11,24 @@ import qualified Data.ByteString.Lazy as B
 
 import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Tree
+import Text.Parsec
 
 import HTML
 import PHP.BB
-
+import Text.HTML.TagSoup.Parsec
 
 
 exampleHtml :: Text
 exampleHtml = $(embedStringFile "page-example.html")
 
 main :: IO ()
-main =  print . take 4 . parseTags $ exampleHtml
+main = do
+  let res = parse runExampleParser "EXAMPLE" exampleParserInput
+  print res
+
+exampleParserInput :: [Tag Text]
+exampleParserInput =
+  [TagText "  \n "]
+
+runExampleParser :: TagParser Text (Tag Text)
+runExampleParser = tagSpace
