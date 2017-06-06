@@ -16,6 +16,7 @@ library
   exposed-modules:     HTML
                      , PHP.BB
                      , Text.HTML.TagSoup.Parsec
+                     , Text.HTML.Parser.Tag
                      
   build-depends:       base >=4.6 && < 4.10
                      , http-conduit
@@ -25,6 +26,8 @@ library
                      , tagsoup
                      , containers
                      , parsec
+                     , html-parse
+                     , attoparsec
                        
   hs-source-dirs:      src
   include-dirs:        src
@@ -49,9 +52,31 @@ executable time
   
 executable php-bb
   build-depends:    base < 5
-  build-depends:    scratch, text, tagsoup, bytestring, file-embed, parsec
+  build-depends:      scratch
+                    , text
+                    , tagsoup
+                    , bytestring
+                    , file-embed
+                    , parsec
+                    , attoparsec
+                    , html-parse
+                    
   hs-source-dirs:   app/PHP/BB
   main-is:          Main.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
+
+executable php-bb-html-parse
+  build-depends:    base < 5
+  build-depends:      scratch
+                    , text
+                    , bytestring
+                    , file-embed
+                    , attoparsec
+                    , html-parse
+                    
+  hs-source-dirs:   app/PHP/BB
+  main-is:          HtmlParse.hs
   default-language: Haskell2010
   ghc-options:      -Wall
   

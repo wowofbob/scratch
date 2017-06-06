@@ -4,6 +4,7 @@ module Main where
 
 import Data.FileEmbed
 
+import qualified Data.Text.Internal as IText
 import Data.Text.Lazy (Text)
 import Data.Text.Lazy.Encoding
 
@@ -17,12 +18,19 @@ import HTML
 import PHP.BB
 import Text.HTML.TagSoup.Parsec
 
+import Text.HTML.Parser
+import Text.HTML.Parser.Tag
 
-exampleHtml :: Text
-exampleHtml = $(embedStringFile "page-example.html")
 
 main :: IO ()
-main = do
+main = print . parseTags $ exampleHtml
+
+
+exampleHtml :: Text
+exampleHtml = $(embedStringFile "tree-example.html")
+
+exampleParserMain :: IO ()
+exampleParserMain = do
   let res = parse runExampleParser "EXAMPLE" exampleParserInput
   print res
 
