@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module PHP.BB where
 
+import Prelude hiding (words, unwords, tail, filter)
+import Data.Text hiding (Text, drop, init)
 import Data.Text.Internal (Text)
 import Data.Attoparsec.Text hiding (skipSpace, skip)
 import Text.HTML.Parser
@@ -13,42 +15,49 @@ import HTML
 
 data Topic
   = Topic
-  { topicName    :: Text
+  { topicTitle   :: Text
   , topicAuthor  :: Text
   , topicDate    :: Text
   , topicReplies :: Word
   , topicViews   :: Word
-  , topicUrl     :: URL
-  }
+  , topicRef     :: Maybe Text
+  } deriving Show
 
-topic :: Parser Text
-topic =
-  do skip $ tagOpen' "li"
-     skip $ tagOpen' "dl"
-     skip $ tagOpen' "dt"
-     href <- attr "href" <$> tagOpen "a"
-     name <- contentText
-     skip $ tagClose' "a"
-     skip $ tagOpen' "br"
-     
-     skip $ tagOpen' "strong"
-     _ <- manyTill anyToken (tagClose "strong")
-     
-     skip $ contentText
-     skip $ tagOpen' "a"
-     author <- contentText
-     skip $ tagClose' "a"
-     date <- contentText
-     
-     _ <- manyTill anyToken (tagClose "dt")
-     _ <- manyTill anyToken (tagOpen "dd")
-     replies <- contentText
-     
-     _ <- manyTill anyToken (tagOpen "dd")
-     views <- contentText
-     
-     pure date
-     
+topic :: Parser Topic
+topic = do 
+  
+  -- Gather information.
+  mref    <- attr "href" <$> tagOpen "a" `after` tagOpen "dt"
+  title   <- contentText
+  author  <- contentText `after` tagOpen "a" `after` tagClose "strong"
+  date    <- contentText `after` tagClose "a"
+  replies <- contentText `after` tagOpen "dd"
+  views   <- contentText `after` tagOpen "dd"
+  
+  -- Skip tokens until the end of topic section.
+  skipUntil (tagClose "li")
+  
+  -- Format data to look pretty.
+  let
+            -- Drop '.' (it's not enouth yet)
+    fmref = tail <$> mref
+    
+            -- Remove ','
+    fdate = filter ((/=) ',') . 
+              -- Assemble everything back
+              unwords .
+                -- Drop "&raquo;" and "Mon"
+                drop 2 .
+                  -- Drop "am"
+                  init .
+                    words $ date
+    
+    rcnt  = read . unpack $ replies
+    vcnt  = read . unpack $ views
+    
+  
+  pure $ Topic title author fdate rcnt vcnt fmref
+       
 
 
 

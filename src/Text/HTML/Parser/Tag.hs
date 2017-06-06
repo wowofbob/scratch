@@ -19,8 +19,8 @@ type Attrs = M.Map Text Text
 fromAttrs :: [Attr] -> Attrs
 fromAttrs = foldl (\ m (Attr k v) -> M.insert k v m) M.empty 
 
-attr :: Text -> Attrs -> Text
-attr k = flip (M.!) k
+attr :: Text -> Attrs -> Maybe Text
+attr k = M.lookup k
 
 
 -- * Matching functions.
@@ -134,6 +134,12 @@ withToken p =
 
 skip :: Parser a -> Parser ()
 skip p = p >> pure ()
+
+skipUntil :: Parser a -> Parser ()
+skipUntil p = manyTill anyToken p >> pure ()
+
+after :: Parser b -> Parser a -> Parser b
+after p q = skipUntil q >> p
 
 
 -- * Space processing parsers.
