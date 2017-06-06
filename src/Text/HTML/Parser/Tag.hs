@@ -38,7 +38,6 @@ isDoctype _           = False
 -- Token is a space token if it is a:
 --   * ContentText containing spaces
 --   * ContentChar containing space
---   * Comment
 isSpaceToken :: Token -> Bool
 isSpaceToken t =
   case t of
@@ -104,7 +103,6 @@ skip p = p >> pure ()
 -- Read token not containing valuable information:
 --   * ContentText containing spaces
 --   * ContentChar containing space
---   * Comment
 space :: Parser Token
 space =
   satisfyToken isSpaceToken <?> "space"
