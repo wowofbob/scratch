@@ -103,4 +103,9 @@ skipSpace = skipMany space
 
 skip :: Parser a -> Parser ()
 skip p = p >> pure ()
+
+-- Alias for 'token'.
+anyToken :: Parser Token
+anyToken = token
+
        
