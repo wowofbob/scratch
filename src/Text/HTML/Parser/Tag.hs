@@ -9,6 +9,18 @@ import Data.Text.Internal (Text)
 import Data.Text.Lazy.Builder
 import Text.HTML.Parser
 
+import qualified Data.Map.Lazy as M
+
+
+-- * Utility
+
+type Attrs = M.Map Text Text
+
+fromAttrs :: [Attr] -> Attrs
+fromAttrs = foldl (\ m (Attr k v) -> M.insert k v m) M.empty 
+
+attr :: Text -> Attrs -> Text
+attr k = flip (M.!) k
 
 
 -- * Matching functions.
@@ -54,12 +66,12 @@ isSpaceToken t =
 anyToken :: Parser Token
 anyToken = token
 
-tagOpen :: Text -> Parser [Attr]
+tagOpen :: Text -> Parser Attrs
 tagOpen n =
   withToken
     (\ t -> case t of
       TagOpen n' attrs -> if n == n'
-                            then Just attrs
+                            then Just (fromAttrs attrs)
                             else Nothing
       _                -> Nothing) <?> msg
   where
@@ -142,7 +154,7 @@ ignoreSpace p = skipSpace >> p
 
 -- * Parsers ignoring spaces.
 
-tagOpen' :: Text -> Parser [Attr]
+tagOpen' :: Text -> Parser Attrs
 tagOpen' = ignoreSpace . tagOpen
 
 tagClose' :: Text -> Parser ()

@@ -21,12 +21,33 @@ data Topic
   , topicUrl     :: URL
   }
 
-topic :: Parser [Attr]
+topic :: Parser Text
 topic =
   do skip $ tagOpen' "li"
      skip $ tagOpen' "dl"
      skip $ tagOpen' "dt"
-     tagOpen' "a"
+     href <- attr "href" <$> tagOpen "a"
+     name <- contentText
+     skip $ tagClose' "a"
+     skip $ tagOpen' "br"
+     
+     skip $ tagOpen' "strong"
+     _ <- manyTill anyToken (tagClose "strong")
+     
+     skip $ contentText
+     skip $ tagOpen' "a"
+     author <- contentText
+     skip $ tagClose' "a"
+     date <- contentText
+     
+     _ <- manyTill anyToken (tagClose "dt")
+     _ <- manyTill anyToken (tagOpen "dd")
+     replies <- contentText
+     
+     _ <- manyTill anyToken (tagOpen "dd")
+     views <- contentText
+     
+     pure date
      
 
 
