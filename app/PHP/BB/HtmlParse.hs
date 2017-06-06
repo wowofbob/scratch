@@ -16,8 +16,8 @@ import PHP.BB
 exampleHtml :: Text
 exampleHtml = $(embedStringFile "tree-example.html")
 
--- Parse replies count.
-exampleParser :: Parser Text
+-- Parse topic.
+exampleParser :: Parser Topic
 exampleParser = topic
 
 main :: IO ()
