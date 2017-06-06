@@ -11,16 +11,14 @@ import Data.Text.Internal
 import Text.HTML.Parser
 import Text.HTML.Parser.Tag
 
+import PHP.BB
 
 exampleHtml :: Text
 exampleHtml = $(embedStringFile "tree-example.html")
 
 -- Parse replies count.
-exampleParser :: Parser Int
-exampleParser =
-  do _                <- manyTill anyToken (tagOpen "dd")
-     ContentText text <- contentText
-     pure . read . unpack $ text
+exampleParser :: Parser Token
+exampleParser = topic
 
 main :: IO ()
 main = print $ parse exampleParser exampleHtml

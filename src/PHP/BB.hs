@@ -1,13 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module PHP.BB where
 
-import Data.Text.Lazy
-import Data.Text.Lazy.Encoding
-import Data.Word
-import Text.HTML.TagSoup
-import Text.HTML.TagSoup.Tree
-import Text.ParserCombinators.Parsec
-import Text.StringLike
+import Data.Text.Internal (Text)
+import Data.Attoparsec.Text hiding (skipSpace, skip)
+import Text.HTML.Parser
+import Text.HTML.Parser.Tag
 
 import qualified Data.Map.Lazy as M
 
@@ -24,6 +21,21 @@ data Topic
   , topicUrl     :: URL
   }
 
+topic :: Parser Token
+topic =
+  do skipSpace
+     skip $ tagOpen "li"
+     skipSpace
+     skip $ tagOpen "dl"
+     skipSpace
+     skip $ tagOpen "dt"
+     skipSpace
+     tagOpen "a"
+     
+
+
+
+
 data ForumPage
   = ForumPage
   { pageName   :: Text
@@ -31,31 +43,3 @@ data ForumPage
   , pageNumber :: Word
   , pageMap    :: M.Map Word URL
   }
-  
-
-
-data WebPageParams s
-  = WebPageParams
-  { webPageDocType :: [Attribute s]
-  , webPageHtml    :: [Attribute s]
-  }
-  
-
-data WebPage s
-  = WebPage
-  { webPageParams  :: WebPageParams s
-  , webPageHead    :: TagTree s
-  , webPageBody    :: TagTree s
-  }
-
-webPage :: StringLike s => s -> WebPage s
-webPage input = let
-  tree = parseTree input
-  in undefined
-
-isTopic :: TagTree Text -> Bool
-isTopic (TagBranch "li" [("class", "row bg1")] _) = True
-isTopic (TagBranch "li" [("class", "row bg2")] _) = True
-isTopic _                                         = False
-
-
