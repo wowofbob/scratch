@@ -2,7 +2,7 @@ module Text.HTML.Parser.Tag where
 
 import Prelude hiding (all)
 import Control.Monad
-import Data.Attoparsec.Text hiding (space)
+import Data.Attoparsec.Text hiding (space, skipSpace)
 import Data.Char
 import Data.Text (unpack, all)
 import Data.Text.Internal (Text)
@@ -44,23 +44,14 @@ isSpaceToken t =
   case t of
     ContentText text -> all isSpace text
     ContentChar c    -> isSpace c
-    Comment _        -> True
     _                -> False
 
 
--- * Parsers
+-- * Tag parsers
 
--- Might be a problems with choices here:
--- This line 
---   t <- token
--- reads input from a stream. If first choice
--- fails, would the next one get the same input?
-satisfyToken :: (Token -> Bool) -> Parser Token
-satisfyToken p =
-  do t <- token
-     when (not (p t)) $ fail "satisfyToken"
-     pure t
-     
+-- Alias for 'token'.
+anyToken :: Parser Token
+anyToken = token
 
 tagOpen :: Text -> Parser Token
 tagOpen n =
@@ -90,6 +81,26 @@ doctype :: Parser Token
 doctype =
   satisfyToken isDoctype <?> "doctype"
 
+
+-- * Combinators.
+
+-- Might be a problems with choices here:
+-- This line 
+--   t <- token
+-- reads input from a stream. If first choice
+-- fails, would the next one get the same input?
+satisfyToken :: (Token -> Bool) -> Parser Token
+satisfyToken p =
+  do t <- token
+     when (not (p t)) $ fail "satisfyToken"
+     pure t
+
+skip :: Parser a -> Parser ()
+skip p = p >> pure ()
+
+
+-- * Space processing parsers.
+
 -- Read token not containing valuable information:
 --   * ContentText containing spaces
 --   * ContentChar containing space
@@ -101,11 +112,20 @@ space =
 skipSpace :: Parser ()
 skipSpace = skipMany space
 
-skip :: Parser a -> Parser ()
-skip p = p >> pure ()
+ignoreSpace :: Parser a -> Parser a
+ignoreSpace p = skipSpace >> p
 
--- Alias for 'token'.
-anyToken :: Parser Token
-anyToken = token
 
-       
+-- * Parsers ignoring spaces.
+
+tagOpen' :: Text -> Parser Token
+tagOpen' = ignoreSpace . tagOpen
+
+tagClose' :: Text -> Parser Token
+tagClose' = ignoreSpace . tagClose
+
+comment' :: Parser Token
+comment' = ignoreSpace comment
+
+doctype' :: Parser Token
+doctype' = ignoreSpace doctype

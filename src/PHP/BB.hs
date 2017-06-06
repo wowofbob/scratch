@@ -23,14 +23,10 @@ data Topic
 
 topic :: Parser Token
 topic =
-  do skipSpace
-     skip $ tagOpen "li"
-     skipSpace
-     skip $ tagOpen "dl"
-     skipSpace
-     skip $ tagOpen "dt"
-     skipSpace
-     tagOpen "a"
+  do skip $ tagOpen' "li"
+     skip $ tagOpen' "dl"
+     skip $ tagOpen' "dt"
+     tagOpen' "a"
      
 
 
