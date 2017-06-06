@@ -6,7 +6,9 @@ import Data.Attoparsec.Text hiding (space, skipSpace)
 import Data.Char
 import Data.Text (unpack, all)
 import Data.Text.Internal (Text)
+import Data.Text.Lazy.Builder
 import Text.HTML.Parser
+
 
 
 -- * Matching functions.
@@ -52,33 +54,50 @@ isSpaceToken t =
 anyToken :: Parser Token
 anyToken = token
 
-tagOpen :: Text -> Parser Token
+tagOpen :: Text -> Parser [Attr]
 tagOpen n =
-  satisfyToken (isTagOpen n) <?> msg
+  withToken
+    (\ t -> case t of
+      TagOpen n' attrs -> if n == n'
+                            then Just attrs
+                            else Nothing
+      _                -> Nothing) <?> msg
   where
     msg = unwords ["tagOpen", unpack n]
     
-tagClose :: Text -> Parser Token
+tagClose :: Text -> Parser ()
 tagClose n =
-  satisfyToken (isTagClose n) <?> msg
+  satisfyToken (isTagClose n) >> pure () <?> msg
   where
     msg = unwords ["tagClose", unpack n]
 
-contentText :: Parser Token
+contentText :: Parser Text
 contentText =
-  satisfyToken isContentText <?> "contentText"
+  withToken
+    (\ t -> case t of
+      ContentText text -> Just text
+      _                -> Nothing) <?> "contentText"
 
-contentChar :: Parser Token
+contentChar :: Parser Char
 contentChar =
-  satisfyToken isContentChar <?> "contentChar"
+  withToken
+    (\ t -> case t of
+      ContentChar c -> Just c
+      _             -> Nothing) <?> "contentChar"
 
-comment :: Parser Token
+comment :: Parser Builder
 comment =
-  satisfyToken isComment <?> "comment"
+  withToken
+    (\ t -> case t of
+      Comment b -> Just b
+      _         -> Nothing) <?> "comment"
 
-doctype :: Parser Token
+doctype :: Parser Text
 doctype =
-  satisfyToken isDoctype <?> "doctype"
+  withToken
+    (\ t -> case t of
+      Doctype text -> Just text
+      _            -> Nothing) <?> "doctype"
 
 
 -- * Combinators.
@@ -93,6 +112,13 @@ satisfyToken p =
   do t <- token
      when (not (p t)) $ fail "satisfyToken"
      pure t
+
+withToken :: (Token -> Maybe a) -> Parser a
+withToken p =
+  do t <- token
+     case p t of
+       Just a  -> pure a
+       Nothing -> fail "withToken"
 
 skip :: Parser a -> Parser ()
 skip p = p >> pure ()
@@ -116,14 +142,14 @@ ignoreSpace p = skipSpace >> p
 
 -- * Parsers ignoring spaces.
 
-tagOpen' :: Text -> Parser Token
+tagOpen' :: Text -> Parser [Attr]
 tagOpen' = ignoreSpace . tagOpen
 
-tagClose' :: Text -> Parser Token
+tagClose' :: Text -> Parser ()
 tagClose' = ignoreSpace . tagClose
 
-comment' :: Parser Token
+comment' :: Parser Builder
 comment' = ignoreSpace comment
 
-doctype' :: Parser Token
+doctype' :: Parser Text
 doctype' = ignoreSpace doctype

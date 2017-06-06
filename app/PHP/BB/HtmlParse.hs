@@ -17,7 +17,7 @@ exampleHtml :: Text
 exampleHtml = $(embedStringFile "tree-example.html")
 
 -- Parse replies count.
-exampleParser :: Parser Token
+exampleParser :: Parser [Attr]
 exampleParser = topic
 
 main :: IO ()

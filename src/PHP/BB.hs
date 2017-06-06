@@ -21,7 +21,7 @@ data Topic
   , topicUrl     :: URL
   }
 
-topic :: Parser Token
+topic :: Parser [Attr]
 topic =
   do skip $ tagOpen' "li"
      skip $ tagOpen' "dl"
