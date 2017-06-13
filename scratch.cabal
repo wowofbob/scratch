@@ -95,3 +95,11 @@ executable id
   main-is:          Main.hs
   default-language: Haskell2010
   ghc-options:      -Wall
+
+executable so-44514645
+  build-depends:    base < 5
+  build-depends:    scratch, aeson, file-embed, text, bytestring
+  hs-source-dirs:   app/SO
+  main-is:          so44514645.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
