@@ -87,3 +87,12 @@ executable yesod-basic
   main-is:          Main.hs
   default-language: Haskell2010
   ghc-options:      -Wall
+
+executable loop
+  build-depends:    base < 5
+  build-depends:    scratch, containers, timeit
+  hs-source-dirs:   app/Loop
+  main-is:          Main.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
+
