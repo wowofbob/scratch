@@ -87,6 +87,22 @@ executable yesod-basic
   main-is:          Main.hs
   default-language: Haskell2010
   ghc-options:      -Wall
+    
+executable id
+  build-depends:    base < 5
+  build-depends:    scratch
+  hs-source-dirs:   app/Id
+  main-is:          Main.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
+
+executable so-44514645
+  build-depends:    base < 5
+  build-depends:    scratch, aeson, file-embed, text, bytestring
+  hs-source-dirs:   app/SO
+  main-is:          so44514645.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
 
 executable loop
   build-depends:    base < 5
@@ -95,4 +111,3 @@ executable loop
   main-is:          Main.hs
   default-language: Haskell2010
   ghc-options:      -Wall
-
