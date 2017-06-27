@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Main where
 
 import Prelude hiding (read)
@@ -8,55 +9,44 @@ import Data.Int
 import System.TimeIt
 
 
--- Hide variable type.
-class IOVar v where  
-  read  :: v a -> IO a
-  write :: a -> v a -> IO ()
+class Filter input state where
+  filter_ :: input -> state -> input
 
+data Input
+  = Start
+  | Pause
+  | Stop
+  | Restart
 
--- Commands.
-data Command
-  = Start | Pause | Stop
-
-
--- State.
 data State
-  = Running | Waiting
+  = Running
+  | Waiting
 
--- Possible responces for commands.
-data Action
-  = Run | Wait | Exit
+data Status
+  = Status
+  { statusError :: Bool
+  , statusState :: State
+  }
 
-action :: Command -> State -> Action
-action Start Running = Run
-action Start Waiting = Run
-action Pause Running = Wait
-action Pause Waiting = Wait
-action Stop  _       = Exit
+instance Filter Input Status where
+  filter_ Restart _ = Restart
+  filter_ i       s =
+    case statusError s of
+      True  -> Pause
+      False -> i
 
+data Do   what
+data Done what
 
-loop
-  :: IOVar v
-  => v (Maybe Command)
-  -> IO ()
-  -> v State
-  -> IO ()
-loop ctl f state =
-  do mCmd <- read ctl
-     case mCmd of
-       Nothing  -> run
-       Just cmd ->
-         do s <- read state
-            case action cmd s of
-              Run  -> run
-              Wait -> wait
-              Exit -> pure ()
-  where
-    
-    run  = f >> wait
-         
-    wait = threadDelay 1000
+data Cmd
+  = Run
+  | Wait
 
+type Request  a = Do a 
+type Response a = Done a
+
+class Monad s => Server s where
+  request :: Request a -> s (Response a)
 
 main :: IO ()
 main = pure ()
