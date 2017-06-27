@@ -3,10 +3,25 @@ module Main where
 
 import Prelude hiding (read)
 
-import Control.Concurrent
+import Control.Concurrent hiding (yield)
 import Data.Sequence
 import Data.Int
 import System.TimeIt
+
+import Control.Concurrent.MVar
+import Control.Monad.Except
+import Pipes
+
+
+readVar :: MVar a -> Producer a (ExceptT String IO) ()
+readVar v = do
+  x <- liftIO $ takeMVar v
+  yield x
+  
+writeVar :: Show a => MVar String -> Consumer a (ExceptT String IO) ()
+writeVar v = do
+  x <- show <$> await
+  liftIO $ putMVar v x  
 
 
 class Filter input state where

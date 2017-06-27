@@ -106,7 +106,7 @@ executable so-44514645
 
 executable loop
   build-depends:    base < 5
-  build-depends:    scratch, containers, timeit
+  build-depends:    scratch, containers, timeit, pipes, mtl
   hs-source-dirs:   app/Loop
   main-is:          Main.hs
   default-language: Haskell2010
