@@ -103,3 +103,19 @@ executable so-44514645
   main-is:          so44514645.hs
   default-language: Haskell2010
   ghc-options:      -Wall
+
+executable serial-send
+  build-depends:    base < 5
+  build-depends:    scratch, serialport, bytestring
+  hs-source-dirs:   app/Serial
+  main-is:          Send.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
+
+executable serial-recv
+  build-depends:    base < 5
+  build-depends:    scratch, serialport, bytestring
+  hs-source-dirs:   app/Serial
+  main-is:          Recv.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
