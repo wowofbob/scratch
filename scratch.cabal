@@ -87,7 +87,7 @@ executable yesod-basic
   main-is:          Main.hs
   default-language: Haskell2010
   ghc-options:      -Wall
-  
+    
 executable id
   build-depends:    base < 5
   build-depends:    scratch
@@ -104,6 +104,14 @@ executable so-44514645
   default-language: Haskell2010
   ghc-options:      -Wall
 
+executable loop
+  build-depends:    base < 5
+  build-depends:    scratch, containers, timeit, pipes, mtl
+  hs-source-dirs:   app/Loop
+  main-is:          Main.hs
+  default-language: Haskell2010
+  ghc-options:      -Wall
+
 executable serial-send
   build-depends:    base < 5
   build-depends:    scratch, serialport, bytestring
@@ -117,5 +125,3 @@ executable serial-recv
   build-depends:    scratch, serialport, bytestring
   hs-source-dirs:   app/Serial
   main-is:          Recv.hs
-  default-language: Haskell2010
-  ghc-options:      -Wall
